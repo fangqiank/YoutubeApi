@@ -9,17 +9,23 @@ namespace YoutubeApi.Controllers
     [ApiController]
     public class YoutubeController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public YoutubeController(IConfiguration config)
+        {
+            _config = config;
+        }
         [HttpGet]
         public async Task<IActionResult> GetChannelVidoes(string? pageToken = null, int maxResults = 5)
         {
             var service = new YouTubeService(new BaseClientService.Initializer
             {
                 ApplicationName = "TestYouTube",
-                ApiKey = "AIzaSyBRs93Zal11jSavfzM2JllMHlLYXWL6Afo"
-            });
+                ApiKey = _config.GetValue<string>("Youtube:ApiKey")
+            }); 
 
             var searchRequest = service.Search.List("snippet");
-            searchRequest.ChannelId = "UCC_dVe-RI-vgCZfls06mDZQ";
+            searchRequest.ChannelId = _config.GetValue<string>("Youtube:ChannelId");
             searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
             searchRequest.MaxResults = maxResults;
             searchRequest.PageToken = pageToken;
